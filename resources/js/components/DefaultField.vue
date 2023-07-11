@@ -1,16 +1,19 @@
 <template>
     <div
         v-if="field.visible"
-        class="md:flex space-y-2 md:space-y-0 py-5"
+        class="md:flex md:space-y-0"
         :class="{
-            'md:flex-col': fullWidthContent,
-            'md:flex-row': !fullWidthContent,
+            'md:flex-col py-5': fullWidthContent,
+            'md:flex-row py-5': !fullWidthContent,
         }"
     >
         <div
             v-if="field.withLabel"
-            class="md:mt-2 px-6 md:px-8 py-1"
-            :class="!fullWidthContent ? 'md:w-1/5' : 'md:w-full'"
+            class="px-6 md:px-8"
+            :class="{
+                'md:w-full pb-5': fullWidthContent,
+                'md:w-1/5': !fullWidthContent,
+            }"
         >
             <label
                 :for="labelFor"
@@ -26,18 +29,17 @@
         </div>
 
         <div
-            class="space-y-2 px-6 md:px-8"
-            :class="!fullWidthContent ? 'md:w-4/5' : 'md:w-full'"
+            class="px-6 md:px-4"
+            :class="{
+                'md:w-full': fullWidthContent,
+                'md:w-4/5': !fullWidthContent,
+            }"
         >
             <slot name="field" />
 
             <HelpText class="help-text-error" v-if="showErrors && hasError" v-html="firstError" />
 
-            <HelpText
-                class="help-text"
-                v-if="shouldShowHelpText"
-                v-html="field.helpText"
-            />
+            <HelpText class="help-text" v-if="shouldShowHelpText" v-html="field.helpText" />
         </div>
     </div>
 </template>

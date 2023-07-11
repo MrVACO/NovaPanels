@@ -1376,13 +1376,16 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_HelpText = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("HelpText");
   return $props.field.visible ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
     key: 0,
-    "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["md:flex space-y-2 md:space-y-0 py-5", {
-      'md:flex-col': $props.fullWidthContent,
-      'md:flex-row': !$props.fullWidthContent
+    "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["md:flex md:space-y-0", {
+      'md:flex-col py-5': $props.fullWidthContent,
+      'md:flex-row py-5': !$props.fullWidthContent
     }])
   }, [$props.field.withLabel ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
     key: 0,
-    "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["md:mt-2 px-6 md:px-8 py-1", !$props.fullWidthContent ? 'md:w-1/5' : 'md:w-full'])
+    "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["px-6 md:px-8", {
+      'md:w-full pb-5': $props.fullWidthContent,
+      'md:w-1/5': !$props.fullWidthContent
+    }])
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
     "for": $props.labelFor,
     "class": "inline-block leading-tight"
@@ -1393,7 +1396,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     "class": "text-red-500 text-sm required",
     textContent: (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.__('*'))
   }, null, 8 /* PROPS */, _hoisted_3)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 8 /* PROPS */, _hoisted_1)], 2 /* CLASS */)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-    "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["space-y-2 px-6 md:px-8", !$props.fullWidthContent ? 'md:w-4/5' : 'md:w-full'])
+    "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["px-6 md:px-4", {
+      'md:w-full': $props.fullWidthContent,
+      'md:w-4/5': !$props.fullWidthContent
+    }])
   }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.renderSlot)(_ctx.$slots, "field"), $props.showErrors && _ctx.hasError ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_HelpText, {
     key: 0,
     "class": "help-text-error",
