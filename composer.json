@@ -1,0 +1,30 @@
+{
+    "name": "mr-vaco/nova-panels",
+    "description": "A Laravel Nova asset.",
+    "keywords": [
+        "laravel",
+        "nova",
+        "nova-asset"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^7.3|^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MrVaco\\NovaPanels\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "MrVaco\\NovaPanels\\AssetServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
