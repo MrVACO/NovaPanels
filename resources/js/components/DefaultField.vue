@@ -1,19 +1,19 @@
 <template>
     <div
         v-if="field.visible"
-        class="md:flex md:space-y-0"
-        :class="{
-            'md:flex-col py-5': fullWidthContent,
-            'md:flex-row py-5': !fullWidthContent,
-        }"
+        class="md:space-y-0 py-5 needed-class flex"
+        :class="[
+            fullWidthContent || checkWidthField ? 'flex-col' : 'flex-row',
+            field.width ? 'width-' + field.width + '/12' : 'width-12/12'
+        ]"
     >
         <div
             v-if="field.withLabel"
-            class="px-6 md:px-8"
-            :class="{
-                'md:w-full pb-5': fullWidthContent,
-                'md:w-1/5': !fullWidthContent,
-            }"
+            class="px-4 md:px-4 pb-5"
+            :class="[
+                fullWidthContent || checkWidthField ? 'width-12/12' : 'width-2/12',
+                checkWidthField ? 'text-center' : '',
+            ]"
         >
             <label
                 :for="labelFor"
@@ -30,10 +30,10 @@
 
         <div
             class="px-6 md:px-4"
-            :class="{
-                'md:w-full': fullWidthContent,
-                'md:w-4/5': !fullWidthContent,
-            }"
+            :class="[
+                fullWidthContent || checkWidthField ? 'width-12/12' : 'width-10/12',
+                checkWidthField ? 'text-center' : '',
+            ]"
         >
             <slot name="field" />
 
@@ -71,6 +71,21 @@ export default {
         shouldShowHelpText() {
             return this.showHelpText && this.field.helpText?.length > 0
         },
+
+        checkWidthField() {
+            return this.field.width < 5;
+        }
+    },
+
+    mounted() {
+        this.setClasses()
+    },
+
+    methods: {
+        setClasses() {
+            const first_field = document.querySelector('.needed-class')
+            first_field.parentElement.classList.add('flex', 'flex-wrap')
+        }
     }
 }
 </script>
