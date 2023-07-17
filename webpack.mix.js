@@ -13,3 +13,4 @@ mix
     })
     .nova('mr-vaco/nova-panels')
     .disableNotifications()
+    .version()

@@ -26,6 +26,17 @@ class AssetServiceProvider extends ServiceProvider
                     'width' => $columns
                 ]);
             });
+            
+            /*
+             * Set label and field as column? Default "row"
+             * Use Field::make(...)->col()
+             */
+            Field::macro('col', function()
+            {
+                return $this->withMeta([
+                    'col' => true
+                ]);
+            });
         });
     }
 }
