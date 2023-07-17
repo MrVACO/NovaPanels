@@ -19,7 +19,6 @@
                     class="text-red-500 text-sm required"
                     v-text="__('*')"
                 />
-                ( {{ field.col ? 1 : 0 }} )
             </label>
         </div>
 
