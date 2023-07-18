@@ -1,7 +1,7 @@
 <template>
     <LoadingView :loading="loading">
-        <template v-if="shouldOverrideMeta && resourceInformation">
-            <Head :title="__('Create :resource', {resource: resourceInformation.singularLabel})" />
+        <template v-if="shouldOverrideMeta">
+            <Head :title="panels[0].name" />
         </template>
 
         <form
@@ -10,6 +10,7 @@
             @change="onUpdateFormStatus"
             autocomplete="off"
             ref="form"
+            class="space-y-8"
         >
             <div
                 class="flex"

@@ -1,7 +1,7 @@
 <template>
     <LoadingView :loading="loading">
-        <template v-if="resourceInformation && title">
-            <Head :title="__('Update :resource: :title', {resource: resourceInformation.singularLabel, title: title})" />
+        <template v-if="title">
+            <Head :title="__('Update :resource: :title', {resource: '', title: title})" />
         </template>
 
         <form
@@ -84,7 +84,7 @@
 <script>
 import each from 'lodash/each'
 import tap from 'lodash/tap'
-import { HandlesFormRequest, HandlesUploads, mapProps, PreventsFormAbandonment, } from 'laravel-nova'
+import { HandlesFormRequest, HandlesUploads, mapProps, PreventsFormAbandonment } from 'laravel-nova'
 import { uid } from 'uid/single'
 
 export default {
