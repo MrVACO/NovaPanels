@@ -12,36 +12,26 @@
             ref="form"
             class="space-y-8"
         >
-            <div
-                class="flex"
-            >
-                <component
-                    v-for="(panel, key) in panels"
-                    :key="panel.id"
-                    :is="'form-' + panel.component"
-                    @field-changed="onUpdateFormStatus"
-                    @file-upload-started="handleFileUploadStarted"
-                    @file-upload-finished="handleFileUploadFinished"
-                    :shown-via-new-relation-modal="shownViaNewRelationModal"
-                    :panel="panel"
-                    :name="panel.name"
-                    :resource-name="resourceName"
-                    :fields="panel.fields"
-                    :mode="mode"
-                    :validation-errors="validationErrors"
-                    :via-resource="viaResource"
-                    :via-resource-id="viaResourceId"
-                    :via-relationship="viaRelationship"
-                    :show-help-text="true"
-                    class="px-2 py-2"
-                    :class="{
-                        'w-75': panels.length > 1 && key === 0,
-                        'w-25': panels.length > 1 && key === 1,
-                        'w-full': panels.length === 1
-                    }"
-                />
-            </div>
-
+            <component
+                v-for="(panel, key) in panels"
+                :key="panel.id"
+                :is="'form-' + panel.component"
+                @field-changed="onUpdateFormStatus"
+                @file-upload-started="handleFileUploadStarted"
+                @file-upload-finished="handleFileUploadFinished"
+                :shown-via-new-relation-modal="shownViaNewRelationModal"
+                :panel="panel"
+                :name="panel.name"
+                :resource-name="resourceName"
+                :fields="panel.fields"
+                :mode="mode"
+                :validation-errors="validationErrors"
+                :via-resource="viaResource"
+                :via-resource-id="viaResourceId"
+                :via-relationship="viaRelationship"
+                :show-help-text="true"
+                class="px-2 py-2"
+            />
 
             <div
                 class="flex flex-col md:flex-row md:items-center justify-center md:justify-end space-y-2 md:space-y-0 space-x-3"

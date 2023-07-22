@@ -39,8 +39,8 @@
                     :show-help-text="true"
                     class="px-2 py-2"
                     :class="{
-                        'w-75': panels.length > 1 && key === 0,
-                        'w-25': panels.length > 1 && key === 1,
+                        'width-9/12': panel.isPrimaryPanel,
+                        'width-3/12': panel.isSecondaryPanel,
                         'w-full': panels.length === 1
                     }"
                 />

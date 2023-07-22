@@ -37,6 +37,16 @@ class AssetServiceProvider extends ServiceProvider
                     'col' => true
                 ]);
             });
+            
+            /*
+             * Margin option to display in the sidebar
+             */
+            Field::macro('forSecondary', function()
+            {
+                return $this->withMeta([
+                    'forSecondaryPanel' => true
+                ]);
+            });
         });
     }
 }

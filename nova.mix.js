@@ -26,6 +26,14 @@ class NovaExtension {
                 __dirname,
                 '../../vendor/laravel/nova/resources/js/util/index.js'
             ),
+            'laravel-mixins': path.join(
+                __dirname,
+                '../../vendor/laravel/nova/resources/js/mixins/index.js'
+            ),
+            'laravel-mixins-short': path.join(
+                __dirname,
+                './resources/js/short_mixins'
+            ),
         }
 
         webpackConfig.output = {

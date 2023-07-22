@@ -16,6 +16,7 @@
         </div>
 
         <div
+            class="flex flex-wrap"
             :class="shouldShowCards && hasDetailOnlyCards && cards.length > 0 ? 'mt-6' : ''"
             :dusk="resourceName + '-detail-component'"
         >
@@ -27,11 +28,12 @@
                 :resource="resource"
                 :resource-id="resourceId"
                 :resource-name="resourceName"
-                class="mb-8"
+                class="px-2 py-2"
+                :class="panelClass(panel)"
             >
-                <div v-if="panel.showToolbar" class="md:flex items-center mb-3">
+                <div v-if="panel.showToolbar" class="md:flex items-center">
                     <div class="flex flex-auto truncate items-center">
-                        <Heading :level="1" v-text="panel.name" />
+                        <Heading v-text="panel.name" />
                         <Badge
                             v-if="resource.softDeleted"
                             :label="__('Soft Deleted')"
@@ -84,6 +86,11 @@
                         </Link>
                     </div>
                 </div>
+                <div v-else-if="!panel.showToolbar" class="mt-3">
+                    <div class="flex flex-auto truncate items-center">
+                        <Heading v-text="panel.name" />
+                    </div>
+                </div>
             </component>
         </div>
     </LoadingView>
@@ -91,7 +98,7 @@
 
 <script>
 import isNil from 'lodash/isNil'
-import { Errors, HasCards, mapProps, } from 'laravel-nova'
+import { Errors, HasCards, mapProps } from 'laravel-nova'
 import { minimum } from 'laravel-util'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -285,6 +292,12 @@ export default {
                 ? 'detail-' + panel.component
                 : panel.component
         },
+
+        panelClass(panel) {
+            const classes = ['width-12/12'];
+
+            return classes.join(" ")
+        }
     },
 
     computed: {

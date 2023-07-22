@@ -3,7 +3,7 @@
         <Heading
             :level="1"
             :class="panel.helpText ? 'mb-2' : 'mb-3'"
-            v-text="label + '&nbsp;'"
+            v-text="panel.name"
         />
 
         <p
@@ -12,32 +12,63 @@
             v-html="panel.helpText"
         />
 
-        <Card class="divide-y divide-gray-100 dark:divide-gray-700">
-            <component
-                v-for="(field, index) in panel.fields"
-                :index="index"
-                :key="index"
-                :is="`form-${field.component}`"
-                :errors="validationErrors"
-                :resource-id="resourceId"
-                :resource-name="resourceName"
-                :related-resource-name="relatedResourceName"
-                :related-resource-id="relatedResourceId"
-                :field="field"
-                :via-resource="viaResource"
-                :via-resource-id="viaResourceId"
-                :via-relationship="viaRelationship"
-                :shown-via-new-relation-modal="shownViaNewRelationModal"
-                :form-unique-id="formUniqueId"
-                :mode="mode"
-                @field-shown="handleFieldShown"
-                @field-hidden="handleFieldHidden"
-                @field-changed="$emit('field-changed')"
-                @file-deleted="handleFileDeleted"
-                @file-upload-started="$emit('file-upload-started')"
-                @file-upload-finished="$emit('file-upload-finished')"
-                :show-help-text="showHelpText"
-            />
+        <Card class="divide-x divide-gray-100 dark:divide-gray-700 flex">
+            <div class="width-9/12">
+                <component
+                    v-for="(field, index) in primary"
+                    :index="index"
+                    :key="index"
+                    :is="`form-${field.component}`"
+                    :errors="validationErrors"
+                    :resource-id="resourceId"
+                    :resource-name="resourceName"
+                    :related-resource-name="relatedResourceName"
+                    :related-resource-id="relatedResourceId"
+                    :field="field"
+                    :via-resource="viaResource"
+                    :via-resource-id="viaResourceId"
+                    :via-relationship="viaRelationship"
+                    :shown-via-new-relation-modal="shownViaNewRelationModal"
+                    :form-unique-id="formUniqueId"
+                    :mode="mode"
+                    @field-shown="handleFieldShown"
+                    @field-hidden="handleFieldHidden"
+                    @field-changed="$emit('field-changed')"
+                    @file-deleted="handleFileDeleted"
+                    @file-upload-started="$emit('file-upload-started')"
+                    @file-upload-finished="$emit('file-upload-finished')"
+                    :show-help-text="showHelpText"
+                />
+            </div>
+
+            <div class="width-3/12">
+                <component
+                    v-for="(field, index) in secondary"
+                    :index="index"
+                    :key="index"
+                    :is="`form-${field.component}`"
+                    :errors="validationErrors"
+                    :resource-id="resourceId"
+                    :resource-name="resourceName"
+                    :related-resource-name="relatedResourceName"
+                    :related-resource-id="relatedResourceId"
+                    :field="field"
+                    :via-resource="viaResource"
+                    :via-resource-id="viaResourceId"
+                    :via-relationship="viaRelationship"
+                    :shown-via-new-relation-modal="shownViaNewRelationModal"
+                    :form-unique-id="formUniqueId"
+                    :mode="mode"
+                    @field-shown="handleFieldShown"
+                    @field-hidden="handleFieldHidden"
+                    @field-changed="$emit('field-changed')"
+                    @file-deleted="handleFileDeleted"
+                    @file-upload-started="$emit('file-upload-started')"
+                    @file-upload-finished="$emit('file-upload-finished')"
+                    :show-help-text="showHelpText"
+                    class="width-3/12"
+                />
+            </div>
         </Card>
     </div>
 </template>
@@ -57,6 +88,13 @@ export default {
         'file-upload-started',
         'file-upload-finished',
     ],
+
+    data() {
+        return {
+            primary: [],
+            secondary: []
+        }
+    },
 
     props: {
         ...mapProps(['mode']),
@@ -80,13 +118,20 @@ export default {
         handleFileDeleted() {
             this.$emit('update-last-retrieved-at-timestamp')
         },
+
+        divideFields() {
+            const fields = this.panel.fields
+
+            fields.filter(value => {
+                if (value.forSecondaryPanel)
+                    this.secondary.push(value)
+                else
+                    this.primary.push(value)
+            })
+        }
     },
 
     computed: {
-        label: function () {
-            return this.panel.name === "secondary" ? '' : this.panel.name
-        },
-
         fieldLabel() {
             if (this.fieldName === '') {
                 return ''
@@ -98,6 +143,10 @@ export default {
         shouldShowHelpText() {
             return this.showHelpText && this.field.helpText?.length > 0
         },
+    },
+
+    mounted() {
+        this.divideFields()
     }
 }
 </script>
