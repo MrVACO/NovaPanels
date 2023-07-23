@@ -13,7 +13,12 @@
         />
 
         <Card class="divide-x divide-gray-100 dark:divide-gray-700 flex">
-            <div class="width-9/12">
+            <div
+                :class="{
+                    'width-9/12' : secondary.length > 0,
+                    'width-12/12' : secondary.length === 0,
+                }"
+            >
                 <component
                     v-for="(field, index) in primary"
                     :index="index"
@@ -41,7 +46,10 @@
                 />
             </div>
 
-            <div class="width-3/12">
+            <div
+                v-if="secondary.length > 0"
+                class="width-3/12"
+            >
                 <component
                     v-for="(field, index) in secondary"
                     :index="index"

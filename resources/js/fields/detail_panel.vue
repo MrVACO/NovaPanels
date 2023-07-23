@@ -27,7 +27,12 @@
             class="mt-3 py-2 px-6 divide-x divide-gray-100 dark:divide-gray-700 flex"
             v-if="!collapsed && fields.length > 0"
         >
-            <div class="width-9/12">
+            <div
+                :class="{
+                    'width-9/12' : secondary.length > 0,
+                    'width-12/12' : secondary.length === 0,
+                }"
+            >
                 <component
                     :key="index"
                     v-for="(field, index) in primary"
@@ -41,7 +46,13 @@
                 />
             </div>
 
-            <div class="width-3/12 px-6">
+            <div
+                v-if="secondary.length > 0"
+                class="px-6"
+                :class="{
+                    'width-3/12': secondary.length > 0
+                }"
+            >
                 <component
                     :key="index"
                     v-for="(field, index) in secondary"
