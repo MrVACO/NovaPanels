@@ -14,11 +14,11 @@ import ResourceCreate from '../views/ResourceCreate'
 
 export default {
     name: 'Create',
-
+    
     components: {
         ResourceCreate,
     },
-
+    
     props: mapProps([
         'resourceName',
         'viaResource',

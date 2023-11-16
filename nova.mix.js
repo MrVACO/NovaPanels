@@ -6,16 +6,16 @@ class NovaExtension {
     name() {
         return 'nova-extension'
     }
-
+    
     register(name) {
         this.name = name
     }
-
+    
     webpackConfig(webpackConfig) {
         webpackConfig.externals = {
             vue: 'Vue',
         }
-
+        
         webpackConfig.resolve.alias = {
             ...(webpackConfig.resolve.alias || {}),
             'laravel-nova': path.join(
@@ -35,7 +35,7 @@ class NovaExtension {
                 './resources/js/short_mixins'
             ),
         }
-
+        
         webpackConfig.output = {
             uniqueName: this.name,
         }

@@ -27,7 +27,7 @@
                         {{ fieldValue }}
                     </span>
                 </CopyButton>
-
+                
                 <p
                     v-else-if="fieldValue && !field.copyable && !shouldDisplayAsHtml"
                     class="flex items-center"
@@ -49,53 +49,53 @@ import { CopiesToClipboard, FieldValue } from 'laravel-nova'
 
 export default {
     mixins: [CopiesToClipboard, FieldValue],
-
+    
     props: {
         index: {
             type: Number,
             required: true,
         },
-
+        
         field: {
             type: Object,
             required: true,
         },
-
+        
         fieldName: {
             type: String,
             default: '',
         },
     },
-
+    
     methods: {
         copy() {
             this.copyValueToClipboard(this.field.value)
         },
-
+        
         setParentClasses() {
             const first_field = document.querySelector('.needed-class')
             first_field.parentElement.classList.add('flex', 'flex-wrap')
             first_field.parentElement.classList.remove('divide-y', 'divide-gray-100', 'dark:divide-gray-700')
         }
     },
-
+    
     computed: {
         label() {
             return this.fieldName || this.field.name
         },
-
+        
         mainClass() {
             const classes = []
-
+            
             classes.push(this.fullWidthContent || this.field.col ? 'flex-col' : 'flex-row')
             classes.push(this.field.width ? 'width-' + this.field.width + '/12' : 'width-12/12')
-
+            
             return classes.join(" ")
         },
-
+        
         labelClasses() {
             const classes = ['grid', 'content-center']
-
+            
             if (this.fullWidthContent || this.field.col)
                 classes.push('width-12/12')
             else if (!this.fullWidthContent && this.field.width <= 4)
@@ -107,13 +107,13 @@ export default {
                 !this.fullWidthContent && !this.field.width && !this.field.col
             )
                 classes.push('width-2/12')
-
+            
             return classes.join(" ")
         },
-
+        
         fieldClasses() {
             const classes = ['grid', 'content-center']
-
+            
             if (this.fullWidthContent || this.field.col)
                 classes.push('width-12/12')
             else if (!this.fullWidthContent && this.field.width <= 4)
@@ -125,11 +125,11 @@ export default {
                 !this.fullWidthContent && !this.field.width && !this.field.col
             )
                 classes.push('width-10/12')
-
+            
             return classes.join(" ")
         }
     },
-
+    
     mounted() {
         this.setParentClasses()
     },

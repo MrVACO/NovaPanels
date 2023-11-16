@@ -13,7 +13,7 @@ import ResourceDetail from "../views/ResourceDetail";
 
 export default {
     name: 'Detail',
-    components: { ResourceDetail },
+    components: {ResourceDetail},
     props: mapProps(['resourceName', 'resourceId']),
 }
 </script>

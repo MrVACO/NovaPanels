@@ -20,20 +20,20 @@ import { uid } from 'uid/single'
 import CreateForm from "../components/CreateForm";
 
 export default {
-
+    
     emits: ['refresh', 'create-cancelled'],
-
+    
     mixins: [PreventsFormAbandonment, PreventsModalAbandonment],
-
-    components: { CreateForm },
-
+    
+    components: {CreateForm},
+    
     props: {
         mode: {
             type: String,
             default: 'form',
             validator: val => ['modal', 'form'].includes(val),
         },
-
+        
         ...mapProps([
             'resourceName',
             'viaResource',
@@ -41,54 +41,54 @@ export default {
             'viaRelationship',
         ]),
     },
-
+    
     data: () => ({
         formUniqueId: uid(),
     }),
-
+    
     methods: {
-        handleResourceCreated({ redirect, id }) {
+        handleResourceCreated({redirect, id}) {
             this.mode === 'form' ? this.allowLeavingForm() : this.allowLeavingModal()
-
+            
             Nova.$emit('resource-created', {
                 resourceName: this.resourceName,
                 resourceId: id,
             })
-
+            
             if (this.mode === 'form') {
                 return Nova.visit(redirect)
             }
-
-            return this.$emit('refresh', { redirect, id })
+            
+            return this.$emit('refresh', {redirect, id})
         },
-
+        
         handleResourceCreatedAndAddingAnother() {
             this.disableNavigateBackUsingHistory()
         },
-
+        
         handleCreateCancelled() {
             if (this.mode === 'form') {
                 this.handleProceedingToPreviousPage()
                 this.allowLeavingForm()
-
+                
                 this.proceedToPreviousPage(
                     this.isRelation
-                        ? `/resources/${ this.viaResource }/${ this.viaResourceId }`
-                        : `/resources/${ this.resourceName }`
+                        ? `/resources/${this.viaResource}/${this.viaResourceId}`
+                        : `/resources/${this.resourceName}`
                 )
-
+                
                 return
             }
-
+            
             this.allowLeavingModal()
             return this.$emit('create-cancelled')
         },
-
+        
         onUpdateFormStatus() {
             this.mode === 'form' ? this.updateFormStatus() : this.updateModalStatus()
         },
     },
-
+    
     computed: {
         isRelation() {
             return Boolean(this.viaResourceId && this.viaRelationship)

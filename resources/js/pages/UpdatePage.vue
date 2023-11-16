@@ -18,7 +18,7 @@ export default {
     components: {
         ResourceUpdate,
     },
-
+    
     props: mapProps([
         'resourceName',
         'resourceId',
@@ -26,7 +26,7 @@ export default {
         'viaResourceId',
         'viaRelationship',
     ]),
-
+    
     data: () => ({
         formUniqueId: uid(),
     }),

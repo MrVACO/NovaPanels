@@ -1,9 +1,9 @@
 <template>
     <LoadingView :loading="loading">
-        <template v-if="title">
+        <template v-if="resourceInformation && title">
             <Head :title="__('Update :resource: :title', {resource: '', title: title})" />
         </template>
-
+        
         <form
             v-if="panels"
             @submit="submitViaUpdateResource"
@@ -45,37 +45,33 @@
                     }"
                 />
             </div>
-
+            
             <div
                 class="flex flex-col md:flex-row md:items-center justify-center md:justify-end space-y-2 md:space-y-0 space-x-3"
             >
-                <CancelButton
+                <Button
                     dusk="cancel-update-button"
-                    type="button"
-                    align="center"
+                    variant="ghost"
+                    :label="__('Cancel')"
                     @click="cancelUpdatingResource"
+                    :disabled="isWorking"
                 />
-
-                <LoadingButton
+                
+                <Button
                     dusk="update-and-continue-editing-button"
-                    type="button"
                     @click="submitViaUpdateResourceAndContinueEditing"
                     :disabled="isWorking"
-                    align="center"
-                    :processing="wasSubmittedViaUpdateResourceAndContinueEditing"
-                >
-                    {{ __('Update & Continue Editing') }}
-                </LoadingButton>
-
-                <LoadingButton
+                    :loading="wasSubmittedViaUpdateResourceAndContinueEditing"
+                    :label="__('Update & Continue Editing')"
+                />
+                
+                <Button
                     dusk="update-button"
                     type="submit"
                     :disabled="isWorking"
-                    align="center"
-                    :processing="wasSubmittedViaUpdateResource"
-                >
-                    {{ __("Update") }}
-                </LoadingButton>
+                    :loading="wasSubmittedViaUpdateResource"
+                    :label="__('Update')"
+                />
             </div>
         </form>
     </LoadingView>
@@ -85,17 +81,23 @@
 import each from 'lodash/each'
 import tap from 'lodash/tap'
 import { HandlesFormRequest, HandlesUploads, mapProps, PreventsFormAbandonment } from 'laravel-nova'
+import { InteractsWithResourceInformation } from 'laravel-mixins-short'
 import { uid } from 'uid/single'
+import { Button } from 'laravel-nova-ui'
 
 export default {
-    mixins: [HandlesFormRequest, HandlesUploads, PreventsFormAbandonment],
-
+    mixins: [HandlesFormRequest, HandlesUploads, PreventsFormAbandonment, InteractsWithResourceInformation],
+    
+    components: {
+        Button,
+    },
+    
     provide() {
         return {
             removeFile: this.removeFile,
         }
     },
-
+    
     props: mapProps([
         'resourceName',
         'resourceId',
@@ -103,7 +105,7 @@ export default {
         'viaResourceId',
         'viaRelationship',
     ]),
-
+    
     data: () => ({
         relationResponse: null,
         loading: true,
@@ -115,56 +117,56 @@ export default {
         lastRetrievedAt: null,
         formUniqueId: uid(),
     }),
-
+    
     async created() {
         if (Nova.missingResource(this.resourceName)) return Nova.visit('/404')
-
+        
         if (this.isRelation) {
-            const { data } = await Nova.request().get(
-                `/nova-api/${ this.viaResource }/field/${ this.viaRelationship }`,
-                { params: { relatable: true } }
+            const {data} = await Nova.request().get(
+                `/nova-api/${this.viaResource}/field/${this.viaRelationship}`,
+                {params: {relatable: true}}
             )
             this.relationResponse = data
         }
-
+        
         await this.getFields()
         this.updateLastRetrievedAtTimestamp()
         this.allowLeavingForm()
     },
-
+    
     methods: {
         handleFileDeleted() {
         },
-
+        
         removeFile(attribute) {
-            const { resourceName, resourceId } = this
-
+            const {resourceName, resourceId} = this
+            
             Nova.request().delete(
-                `/nova-api/${ resourceName }/${ resourceId }/field/${ attribute }`
+                `/nova-api/${resourceName}/${resourceId}/field/${attribute}`
             )
         },
-
+        
         handleResourceLoaded() {
             this.loading = false
-
+            
             Nova.$emit('resource-loaded', {
                 resourceName: this.resourceName,
                 resourceId: this.resourceId.toString(),
                 mode: 'update',
             })
         },
-
+        
         async getFields() {
             this.loading = true
-
+            
             this.panels = []
             this.fields = []
-
+            
             const {
-                data: { title, panels, fields },
+                data: {title, panels, fields},
             } = await Nova.request()
                 .get(
-                    `/nova-api/${ this.resourceName }/${ this.resourceId }/update-fields`,
+                    `/nova-api/${this.resourceName}/${this.resourceId}/update-fields`,
                     {
                         params: {
                             editing: true,
@@ -180,14 +182,14 @@ export default {
                         Nova.visit('/404')
                     }
                 })
-
+            
             this.title = title
             this.panels = panels
             this.fields = fields
-
+            
             this.handleResourceLoaded()
         },
-
+        
         async submitViaUpdateResource(e) {
             e.preventDefault()
             this.submittedViaUpdateResource = true
@@ -195,7 +197,7 @@ export default {
             this.allowLeavingForm()
             await this.updateResource()
         },
-
+        
         async submitViaUpdateResourceAndContinueEditing(e) {
             e.preventDefault()
             this.submittedViaUpdateResourceAndContinueEditing = true
@@ -203,79 +205,79 @@ export default {
             this.allowLeavingForm()
             await this.updateResource()
         },
-
+        
         cancelUpdatingResource() {
             this.handleProceedingToPreviousPage()
             this.allowLeavingForm()
-
+            
             this.proceedToPreviousPage(
                 this.isRelation
-                    ? `/resources/${ this.viaResource }/${ this.viaResourceId }`
-                    : `/resources/${ this.resourceName }/${ this.resourceId }`
+                    ? `/resources/${this.viaResource}/${this.viaResourceId}`
+                    : `/resources/${this.resourceName}/${this.resourceId}`
             )
         },
-
+        
         async updateResource() {
             this.isWorking = true
-
+            
             if (this.$refs.form.reportValidity()) {
                 try {
                     const {
-                        data: { redirect, id },
+                        data: {redirect, id},
                     } = await this.updateRequest()
-
+                    
                     Nova.success(this.__('The :resource was updated!', {
                         // resource: this.resourceInformation.singularLabel.toLowerCase()
                         resource: ''
                     }))
-
+                    
                     Nova.$emit('resource-updated', {
                         resourceName: this.resourceName,
                         resourceId: id,
                     })
-
+                    
                     await this.updateLastRetrievedAtTimestamp()
-
+                    
                     if (this.submittedViaUpdateResource) {
                         Nova.visit(redirect)
                     } else {
                         if (id !== this.resourceId) {
-                            Nova.visit(`/resources/${ this.resourceName }/${ id }/edit`)
+                            Nova.visit(`/resources/${this.resourceName}/${id}/edit`)
                         } else {
                             window.scrollTo(0, 0)
-
+                            
                             this.disableNavigateBackUsingHistory()
-
+                            
                             await this.getFields()
-
+                            
                             this.resetErrors()
                             this.submittedViaUpdateResource = false
                             this.submittedViaUpdateResourceAndContinueEditing = false
                             this.isWorking = false
                         }
-
+                        
                         return
                     }
                 } catch (error) {
                     window.scrollTo(0, 0)
-
+                    
                     this.submittedViaUpdateResource = false
                     this.submittedViaUpdateResourceAndContinueEditing = false
-
+                    
                     this.preventLeavingForm()
-
+                    
                     this.handleOnUpdateResponseError(error)
                 }
             }
-
+            
             this.submittedViaUpdateResource = false
             this.submittedViaUpdateResourceAndContinueEditing = false
             this.isWorking = false
         },
-
+        
         updateRequest() {
             return Nova.request().post(
-                `/nova-api/${ this.resourceName }/${ this.resourceId }`,
+                `/nova-api/${this.resourceName}/${this.resourceId}`,
                 this.updateResourceFormData(),
                 {
                     params: {
@@ -288,7 +290,7 @@ export default {
                 }
             )
         },
-
+        
         updateResourceFormData() {
             return tap(new FormData(), formData => {
                 each(this.panels, panel => {
@@ -296,38 +298,38 @@ export default {
                         field.fill(formData)
                     })
                 })
-
+                
                 formData.append('_method', 'PUT')
                 formData.append('_retrieved_at', this.lastRetrievedAt)
             })
         },
-
+        
         updateLastRetrievedAtTimestamp() {
             this.lastRetrievedAt = Math.floor(new Date().getTime() / 1000)
         },
-
+        
         onUpdateFormStatus() {
             this.updateFormStatus()
         },
     },
-
+    
     computed: {
         wasSubmittedViaUpdateResourceAndContinueEditing() {
             return this.isWorking && this.submittedViaUpdateResourceAndContinueEditing
         },
-
+        
         wasSubmittedViaUpdateResource() {
             return this.isWorking && this.submittedViaUpdateResource
         },
-
+        
         singularName() {
             if (this.relationResponse) {
                 return this.relationResponse.singularLabel
             }
-
+            
             return this.resourceInformation.singularLabel
         },
-
+        
         isRelation() {
             return Boolean(this.viaResourceId && this.viaRelationship)
         },
