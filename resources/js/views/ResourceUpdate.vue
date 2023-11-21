@@ -1,7 +1,8 @@
 <template>
     <LoadingView :loading="loading">
-        <template v-if="resourceInformation && title">
-            <Head :title="__('Update :resource: :title', {resource: '', title: title})" />
+        <template v-if="resourceInformation">
+            <Head v-if="panels" :title="panels[0].name" />
+            <Head v-else :title="__('Update :resource: :title', {resource: '', title: title})" />
         </template>
         
         <form

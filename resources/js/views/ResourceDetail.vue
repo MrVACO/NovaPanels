@@ -1,9 +1,10 @@
 <template>
     <LoadingView :loading="initialLoading">
-        <template v-if="shouldOverrideMeta && title">
-            <Head :title="__(':resource Details: :title', { resource: '', title: title })" />
+        <template v-if="shouldOverrideMeta">
+            <Head v-if="panels" :title="panels[0].name" />
+            <Head v-else :title="__(':resource Details: :title', { resource: '', title: title })" />
         </template>
-
+        
         <div v-if="shouldShowCards && hasDetailOnlyCards">
             <Cards
                 v-if="cards.length > 0"
@@ -14,7 +15,7 @@
                 :resource-name="resourceName"
             />
         </div>
-
+        
         <div
             class="flex flex-wrap"
             :class="shouldShowCards && hasDetailOnlyCards && cards.length > 0 ? 'mt-6' : ''"
@@ -40,7 +41,7 @@
                             class="bg-red-100 text-red-500 dark:bg-red-400 dark:text-red-900 rounded px-2 py-0.5 ml-3"
                         />
                     </div>
-
+                    
                     <div class="ml-auto flex items-center">
                         <!-- Actions Menu -->
                         <DetailActionDropdown
@@ -56,7 +57,7 @@
                             @resource-deleted="getResource"
                             @resource-restored="getResource"
                         />
-
+                        
                         <Link
                             v-if="showViewLink"
                             v-tooltip="{placement: 'bottom', distance: 10, skidding: 0, content: __('View') }"
@@ -70,7 +71,7 @@
                                 <Icon type="eye" />
                             </BasicButton>
                         </Link>
-
+                        
                         <Link
                             v-if="resource.authorizedToUpdate"
                             v-tooltip="{placement: 'bottom', distance: 10, skidding: 0, content: __('Edit') }"
@@ -104,10 +105,10 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
     props: {
-        shouldOverrideMeta: { type: Boolean, default: false },
-        showViewLink: { type: Boolean, default: false },
-        shouldEnableShortcut: { type: Boolean, default: false },
-
+        shouldOverrideMeta: {type: Boolean, default: false},
+        showViewLink: {type: Boolean, default: false},
+        shouldEnableShortcut: {type: Boolean, default: false},
+        
         ...mapProps([
             'resourceName',
             'resourceId',
@@ -117,31 +118,31 @@ export default {
             'relationshipType',
         ]),
     },
-
+    
     mixins: [HasCards],
-
+    
     data: () => ({
         initialLoading: true,
         loading: true,
-
+        
         title: null,
         resource: null,
         panels: [],
         actions: [],
         actionValidationErrors: new Errors(),
     }),
-
+    
     /**
      * Bind the keydown even listener when the component is created
      */
     created() {
         if (Nova.missingResource(this.resourceName)) return Nova.visit('/404')
-
+        
         if (this.shouldEnableShortcut === true) {
             Nova.addShortcut('e', this.handleKeydown)
         }
     },
-
+    
     /**
      * Unbind the keydown even listener when the before component is destroyed
      */
@@ -150,30 +151,30 @@ export default {
             Nova.disableShortcut('e')
         }
     },
-
+    
     /**
      * Mount the component.
      */
     mounted() {
         this.initializeComponent()
     },
-
+    
     methods: {
         ...mapActions(['startImpersonating']),
-
+        
         /**
          * Initialize the component's data.
          */
         handleResourceLoaded() {
             this.loading = false
-
+            
             Nova.$emit('resource-loaded', {
                 resourceName: this.resourceName,
                 resourceId: this.resourceId.toString(),
                 mode: 'detail',
             })
         },
-
+        
         /**
          * Handle the keydown event
          */
@@ -184,20 +185,20 @@ export default {
                 e.target.tagName !== 'TEXTAREA' &&
                 e.target.contentEditable !== 'true'
             ) {
-                Nova.visit(`/resources/${ this.resourceName }/${ this.resourceId }/edit`)
+                Nova.visit(`/resources/${this.resourceName}/${this.resourceId}/edit`)
             }
         },
-
+        
         /**
          * Initialize the component's data.
          */
         async initializeComponent() {
             await this.getResource()
             await this.getActions()
-
+            
             this.initialLoading = false
         },
-
+        
         /**
          * Get the resource information.
          */
@@ -205,7 +206,7 @@ export default {
             this.loading = true
             this.panels = null
             this.resource = null
-
+            
             return minimum(
                 Nova.request().get(
                     '/nova-api/' + this.resourceName + '/' + this.resourceId,
@@ -219,11 +220,11 @@ export default {
                     }
                 )
             )
-                .then(({ data: { title, panels, resource } }) => {
+                .then(({data: {title, panels, resource}}) => {
                     this.title = title
                     this.panels = panels
                     this.resource = resource
-
+                    
                     this.handleResourceLoaded()
                 })
                 .catch(error => {
@@ -231,31 +232,31 @@ export default {
                         Nova.$emit('error', error.response.data.message)
                         return
                     }
-
+                    
                     if (error.response.status === 404 && this.initialLoading) {
                         Nova.visit('/404')
                         return
                     }
-
+                    
                     if (error.response.status === 403) {
                         Nova.visit('/403')
                         return
                     }
-
+                    
                     if (error.response.status === 401) return Nova.redirectToLogin()
-
+                    
                     Nova.error(this.__('This resource no longer exists'))
-
-                    Nova.visit(`/resources/${ this.resourceName }`)
+                    
+                    Nova.visit(`/resources/${this.resourceName}`)
                 })
         },
-
+        
         /**
          * Get the available actions for the resource.
          */
         async getActions() {
             this.actions = []
-
+            
             try {
                 const response = await Nova.request().get(
                     '/nova-api/' + this.resourceName + '/actions',
@@ -268,14 +269,14 @@ export default {
                         },
                     }
                 )
-
+                
                 this.actions = response.data?.actions
             } catch (error) {
                 console.log(error)
                 Nova.error(this.__('Unable to load actions for this resource'))
             }
         },
-
+        
         /**
          * Handle an action executed event.
          */
@@ -283,7 +284,7 @@ export default {
             await this.getResource()
             await this.getActions()
         },
-
+        
         /**
          * Resolve the component name.
          */
@@ -292,29 +293,29 @@ export default {
                 ? 'detail-' + panel.component
                 : panel.component
         },
-
+        
         panelClass(panel) {
             const classes = ['width-12/12'];
-
+            
             return classes.join(" ")
         }
     },
-
+    
     computed: {
         ...mapGetters(['currentUser']),
-
+        
         canBeImpersonated() {
             return (
                 this.currentUser.canImpersonate && this.resource.authorizedToImpersonate
             )
         },
-
+        
         shouldShowActionDropdown() {
             return (
                 this.resource && (this.actions.length > 0 || this.canModifyResource)
             )
         },
-
+        
         canModifyResource() {
             return (
                 this.resource.authorizedToReplicate ||
@@ -324,21 +325,21 @@ export default {
                 this.resource.authorizedToForceDelete
             )
         },
-
+        
         /**
          * Determine whether this is a detail view for an Action Event
          */
         isActionDetail() {
             return this.resourceName === 'action-events'
         },
-
+        
         /**
          * Get the endpoint for this resource's metrics.
          */
         cardsEndpoint() {
-            return `/nova-api/${ this.resourceName }/cards`
+            return `/nova-api/${this.resourceName}/cards`
         },
-
+        
         /**
          * Get the extra card params to pass to the endpoint.
          */
